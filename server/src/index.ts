@@ -29,14 +29,34 @@ app.post("/new-word", async (req, res) => {
 app.post("/answer", singleFileUpload, async (req, res) => {
   try {
     const { deviceId, word } = req.body
+
+    console.log(`⏳ Uploading file ${req.file?.originalname} ...`)
+
     const filePath = await uploadFile(req.file as Express.Multer.File)
+
+    console.log(
+      `⏳ Checking answer for word (deviceId ${deviceId}): ${word} ...`
+    )
+
     const transcriptions = await transcribeAudioFile(filePath)
-    console.log(transcriptions.join("/"))
-    console.log(`☁ Checking answer for word (deviceId ${deviceId}): ${word}`)
-    res.status(200).send()
+
+    let correct = false
+    transcriptions.forEach((transcription) => {
+      if (transcription === word.toLowerCase()) {
+        correct = true
+      }
+    })
+
+    console.log(`${correct ? "✅ Correct" : "❌ Incorrect"} answer`)
+
+    return res
+      .json({
+        correct,
+      })
+      .send()
   } catch (error) {
     console.error(error)
-    res.status(500).send()
+    return res.status(500).send()
   }
 })
 
