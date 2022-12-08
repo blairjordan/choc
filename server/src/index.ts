@@ -10,6 +10,8 @@ const host = "0.0.0.0"
 
 app.use(express.json())
 app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.get("/healthz", (req, res) => {
   res.status(200).json({ status: "OK" })
@@ -30,12 +32,14 @@ app.post("/answer", singleFileUpload, async (req, res) => {
   try {
     const { deviceId, word } = req.body
 
-    console.log(`⏳ Uploading file ${req.file?.originalname} ...`)
+    console.log(
+      `⏳ Uploading file ${req.file?.originalname} (deviceId ${deviceId}) ...`
+    )
 
     const filePath = await uploadFile(req.file as Express.Multer.File)
 
     console.log(
-      `⏳ Checking answer for word (deviceId ${deviceId}): ${word} ...`
+      `⏳ Checking answer for word "${word}" (deviceId ${deviceId}) ...`
     )
 
     const transcriptions = await transcribeAudioFile(filePath)
@@ -47,7 +51,9 @@ app.post("/answer", singleFileUpload, async (req, res) => {
       }
     })
 
-    console.log(`${correct ? "✅ Correct" : "❌ Incorrect"} answer`)
+    console.log(
+      `${correct ? "✅ Correct" : "❌ Incorrect"} answer (deviceId ${deviceId})`
+    )
 
     return res
       .json({

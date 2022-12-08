@@ -17,7 +17,11 @@ export async function transcribeAudioFile(gcsUri: string): Promise<string[]> {
 
   const [response] = await client.recognize(request as any)
 
-  if (!response.results || !response.results[0].alternatives) {
+  if (
+    !response.results ||
+    !response.results[0] ||
+    !response.results[0].alternatives
+  ) {
     return []
   }
 
