@@ -6,7 +6,8 @@ import Box from "cli-box"
 
 const API_BASE_URL = "http://localhost:8080"
 const DEVICE_ID = "unit001"
-const FILE_PATH = "/home/blair/code/pegleg/choc/client/out.flac"
+const FILE_PATH = "out.flac"
+const OPEN_PATH = "/home/pi/code/open.py"
 
 export const API = ({ baseUrl }) => ({
   getNewWord: async ({ deviceId }) =>
@@ -80,6 +81,10 @@ const waitForInput = async () => {
       } = await api.checkAnswer({ deviceId: DEVICE_ID, word })
 
       console.log(`${correct ? "✅ Correct" : "❌ Incorrect"} answer`)
+
+      if (correct) {
+        childProcess.spawnSync("python3", [OPEN_PATH])
+      }
 
       waitForInput()
     }
