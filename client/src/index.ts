@@ -4,10 +4,10 @@ import request from "superagent"
 import chalk from "chalk"
 import Box from "cli-box"
 
-const API_BASE_URL = "http://localhost:8080"
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:8080"
 const DEVICE_ID = "unit001"
 const FILE_PATH = "out.flac"
-const OPEN_PATH = "/home/pi/code/open.py"
+const OPEN_PATH = "open.py"
 
 export const API = ({ baseUrl }) => ({
   getNewWord: async ({ deviceId }) =>
@@ -42,7 +42,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 })
 
-console.log("🍫 welcome to choc")
+console.log("🍫 welcome to read'n'feed")
 
 const waitForInput = async () => {
   console.log("⏳ Fetching new word ...")
@@ -63,14 +63,14 @@ const waitForInput = async () => {
         "-y",
         "-f",
         "alsa",
+        "-ac",
+        "1",
         "-i",
         "hw:2",
         "-t",
         "4",
         "-sample_rate",
         "16000",
-        "-ac",
-        "1",
         "out.flac",
       ])
 

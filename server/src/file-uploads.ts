@@ -1,8 +1,7 @@
+import process from "process"
 import Multer from "multer"
 import { RequestHandler } from "express"
 import { Storage } from "@google-cloud/storage"
-
-const GCLOUD_STORAGE_BUCKET = "choc-uploads"
 
 const storage = new Storage()
 
@@ -17,6 +16,12 @@ const multer = Multer({
 const singleFileUpload: RequestHandler = multer.single("file")
 
 async function uploadFile(file: Express.Multer.File): Promise<string> {
+  const GCLOUD_STORAGE_BUCKET = process.env.GCLOUD_STORAGE_BUCKET || ""
+
+  if (!GCLOUD_STORAGE_BUCKET) {
+    throw new Error("GCLOUD_STORAGE_BUCKET not set")
+  }
+
   const bucket = storage.bucket(GCLOUD_STORAGE_BUCKET)
   const blob = bucket.file(file.originalname)
   const blobStream = blob.createWriteStream()
